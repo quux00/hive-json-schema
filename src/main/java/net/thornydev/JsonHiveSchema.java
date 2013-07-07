@@ -1,6 +1,8 @@
 package net.thornydev;
 
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +49,31 @@ public class JsonHiveSchema  {
     System.out.println(schemaWriter.createHiveSchema(json));
   }
   
+  static class OrderedIterator implements Iterator<String> {
+
+    Iterator<String> it;
+    
+    public OrderedIterator(Iterator<String> iter) {
+      SortedSet<String> keys = new TreeSet<String>();
+      while (iter.hasNext()) {
+        keys.add(iter.next());
+      }
+      it = keys.iterator();
+    }
+    
+    public boolean hasNext() {
+      return it.hasNext();
+    }
+
+    public String next() {
+      return it.next();
+    }
+
+    public void remove() {
+      it.remove();
+    }
+  }
+  
   public String createHiveSchema(String json) throws JSONException {
     JSONObject jo = new JSONObject(json);
     
@@ -54,6 +81,7 @@ public class JsonHiveSchema  {
       // TODO: need to write wrapper Iterator that returns them in alphabetical order
       @SuppressWarnings("unchecked")
       Iterator<String> keys = jo.keys();
+      keys = new OrderedIterator(keys);
       StringBuilder sb = new StringBuilder("CREATE TABLE x (\n");
 
       while (keys.hasNext()) {
@@ -76,6 +104,7 @@ public class JsonHiveSchema  {
   private String toHiveSchema(JSONObject o) { 
     @SuppressWarnings("unchecked")
     Iterator<String> keys = o.keys();
+    keys = new OrderedIterator(keys);
     StringBuilder sb = new StringBuilder("struct<");
     
     while (keys.hasNext()) {
