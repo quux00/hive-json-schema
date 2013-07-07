@@ -49,6 +49,78 @@ public class JsonHiveSchema  {
     System.out.println(schemaWriter.createHiveSchema(json));
   }
   
+  public String createHiveSchema(String json) throws JSONException {
+    JSONObject jo = new JSONObject(json);
+    
+    @SuppressWarnings("unchecked")
+    Iterator<String> keys = jo.keys();
+    keys = new OrderedIterator(keys);
+    StringBuilder sb = new StringBuilder("CREATE TABLE x (\n");
+
+    while (keys.hasNext()) {
+      String k = keys.next();
+      sb.append("  ");
+      sb.append(k.toString());
+      sb.append(' ');
+      sb.append(valueToHiveSchema(jo.opt(k)));
+      sb.append(',').append("\n");
+    }
+
+    sb.replace(sb.length() - 2, sb.length(), ")\n"); // remove last comma
+    return sb.append("ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe';").toString();
+  }
+
+  private String toHiveSchema(JSONObject o) throws JSONException { 
+    @SuppressWarnings("unchecked")
+    Iterator<String> keys = o.keys();
+    keys = new OrderedIterator(keys);
+    StringBuilder sb = new StringBuilder("struct<");
+    
+    while (keys.hasNext()) {
+      String k = keys.next();
+      sb.append(k.toString());
+      sb.append(':');
+      sb.append(valueToHiveSchema(o.opt(k)));
+      sb.append(", ");
+    }
+    sb.replace(sb.length() - 2, sb.length(), ">"); // remove last comma
+    return sb.toString();
+  }
+
+  private String toHiveSchema(JSONArray a) throws JSONException {
+    return "array<" + arrayJoin(a, ",") + '>';
+  }
+
+  private String arrayJoin(JSONArray a, String separator) throws JSONException {
+    StringBuilder sb = new StringBuilder();
+
+    if (a.length() == 0) {
+      throw new IllegalStateException("Array is empty: " + a.toString());
+    }
+    
+    Object entry0 = a.get(0);
+    if (entry0 instanceof String) {
+      sb.append("string");
+    } else if (entry0 instanceof JSONObject) {
+      sb.append( toHiveSchema((JSONObject)entry0) );
+    } else if (entry0 instanceof JSONArray) {    
+      sb.append( toHiveSchema((JSONArray)entry0) );
+    }
+    return sb.toString();
+  }
+  
+  private String valueToHiveSchema(Object o) throws JSONException {
+    if (o instanceof String) {
+      return "string";
+    } else if (o instanceof JSONObject) {
+      return toHiveSchema((JSONObject)o);
+    } else if (o instanceof JSONArray) {
+      return toHiveSchema((JSONArray)o);
+    } else {
+      throw new IllegalArgumentException("unknown type: " + o.getClass());
+    }
+  }
+  
   static class OrderedIterator implements Iterator<String> {
 
     Iterator<String> it;
@@ -71,90 +143,6 @@ public class JsonHiveSchema  {
 
     public void remove() {
       it.remove();
-    }
-  }
-  
-  public String createHiveSchema(String json) throws JSONException {
-    JSONObject jo = new JSONObject(json);
-    
-    try {
-      // TODO: need to write wrapper Iterator that returns them in alphabetical order
-      @SuppressWarnings("unchecked")
-      Iterator<String> keys = jo.keys();
-      keys = new OrderedIterator(keys);
-      StringBuilder sb = new StringBuilder("CREATE TABLE x (\n");
-
-      while (keys.hasNext()) {
-        String k = keys.next();
-        sb.append("  ");
-        sb.append(k.toString());
-        sb.append(' ');
-        sb.append(valueToHiveSchema(jo.opt(k)));
-        sb.append(',').append("\n");
-      }
-    
-      sb.replace(sb.length() - 2, sb.length(), ")\n"); // remove last comma
-      return sb.append("ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe';").toString();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  private String toHiveSchema(JSONObject o) { 
-    @SuppressWarnings("unchecked")
-    Iterator<String> keys = o.keys();
-    keys = new OrderedIterator(keys);
-    StringBuilder sb = new StringBuilder("struct<");
-    
-    while (keys.hasNext()) {
-      String k = keys.next();
-      sb.append(k.toString());
-      sb.append(':');
-      sb.append(valueToHiveSchema(o.opt(k)));
-      sb.append(", ");
-    }
-    sb.replace(sb.length() - 2, sb.length(), ">"); // remove last comma
-    return sb.toString();
-  }
-
-  private String toHiveSchema(JSONArray a) {
-    try {
-      return "array<" + aryjoin(a, ",") + '>';
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  public String aryjoin(JSONArray a, String separator) throws JSONException {
-    int len = a.length();
-    StringBuilder sb = new StringBuilder();
-
-    if (len == 0) {
-      throw new IllegalStateException("Array is empty: " + a.toString());
-    }
-    
-    Object entry0 = a.get(0);
-    if (entry0 instanceof String) {
-      sb.append("string");
-    } else if (entry0 instanceof JSONObject) {
-      sb.append( toHiveSchema((JSONObject)entry0) );
-    } else if (entry0 instanceof JSONArray) {    
-      sb.append( toHiveSchema((JSONArray)entry0) );
-    }
-    return sb.toString();
-  }
-  
-  private String valueToHiveSchema(Object o) {
-    if (o instanceof String) {
-      return "string";
-    } else if (o instanceof JSONObject) {
-      return toHiveSchema((JSONObject)o);
-    } else if (o instanceof JSONArray) {
-      return toHiveSchema((JSONArray)o);
-    } else {
-      throw new IllegalArgumentException("unknown type: " + o.getClass());
     }
   }
 }
