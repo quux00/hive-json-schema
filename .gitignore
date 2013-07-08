@@ -1,3 +1,6 @@
 /target
 *.class
 *.jar
+.classpath
+.project
+in.json
