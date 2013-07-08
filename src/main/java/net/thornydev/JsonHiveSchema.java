@@ -93,7 +93,7 @@ public class JsonHiveSchema  {
     @SuppressWarnings("unchecked")
     Iterator<String> keys = jo.keys();
     keys = new OrderedIterator(keys);
-    StringBuilder sb = new StringBuilder("CREATE TABLE ").append(tableName).append("\n");
+    StringBuilder sb = new StringBuilder("CREATE TABLE ").append(tableName).append(" (\n");
 
     while (keys.hasNext()) {
       String k = keys.next();

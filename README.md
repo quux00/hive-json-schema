@@ -35,3 +35,59 @@ Creates `json-hive-schema-1.0.jar` and `json-hive-schema-1.0-jar-with-dependenci
 
 
 Both print the Hive schema to stdout.
+
+
+#### Example:
+
+For the JSON document:
+
+
+    {
+      "description": "my doc",
+      "foo": {
+        "bar": "baz",
+        "quux": "revlos",
+        "level1" : {
+          "l2string": "l2val",
+          "l2struct": {
+            "level3": "l3val"
+          }
+        }
+      },
+      "wibble": "123",
+      "wobble": [
+        {
+          "entry": 1,
+          "EntryDetails": {
+            "details1": "lazybones",
+            "details2": 414
+          }
+        },
+        {
+          "entry": 2,
+          "EntryDetails": {
+            "details1": "entry 123"
+          }
+        }
+      ]
+    }
+
+
+Here's the output:
+
+    $ java -jar target/json-hive-schema-1.0-jar-with-dependencies.jar in.json TopQuark
+    CREATE TABLE TopQuark (
+      description string,
+      foo struct<bar:string, level1:struct<l2string:string, l2struct:struct<level3:string>>, quux:string>,
+      wibble string,
+      wobble array<struct<entry:int, entrydetails:struct<details1:string, details2:int>>>)
+    ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe';
+
+
+
+You can then load your data into Hive and run queries like this:
+
+    hive > select wobble.entry, wobble.EntryDetails.details1, wobble.EntryDetails[0].details2 from TopQuark;
+    entry   details1                    details2
+    [1,2]   ["lazybones","entry 123"]   414
+    Time taken: 15.665 seconds
