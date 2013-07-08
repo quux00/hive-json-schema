@@ -13,15 +13,25 @@ For more information on using the openx Hive-JSON-SerDe, see my [blog post entry
 
     mvn package
 
-Creates json-hive-schema-1.0.jar in the `target` directory.
+Creates `json-hive-schema-1.0.jar` and `json-hive-schema-1.0-jar-with-dependencies.jar` in the `target` directory.
 
 
 
 # Usage
 
+#### with the non-executable jar
+
     java -cp target/json-hive-schema-1.0.jar net.thorndev.JsonHiveSchema file.json
 
     # optionally specify the name of the table
     java -cp target/json-hive-schema-1.0.jar net.thorndev.JsonHiveSchema file.json my_table_name
-    
-Prints the Hive schema to stdout.
+
+
+#### with the executable jar
+
+    java -jar target/json-hive-schema-1.0-jar-with-dependencies.jar file.json
+
+    java -jar target/json-hive-schema-1.0-jar-with-dependencies.jar file.json my_table_name
+
+
+Both print the Hive schema to stdout.
