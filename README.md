@@ -6,6 +6,8 @@ Hive schemas understand arrays, maps and structs.  You can map a JSON array to a
 
 This tool will take a representative JSON document and generate the Hive schema (CREATE TABLE statement) for use with the openx Hive-JSON-Serde.
 
+For more information on using the openx Hive-JSON-SerDe, see my [blog post entry](http://thornydev.blogspot.com/2013/07/querying-json-records-via-hive.html).
+
 
 # Build
 
