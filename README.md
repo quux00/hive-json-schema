@@ -4,7 +4,9 @@ The best tool for using JSON docs with Hive is [rcongui's openx Hive-JSON-Serde]
 
 Hive schemas understand arrays, maps and structs.  You can map a JSON array to a Hive array and a JSON "object" to either a Hive map or struct.  I prefer to map JSON objects to structs.
 
-This tool will take a representative JSON document and generate the Hive schema (CREATE TABLE statement) for use with the openx Hive-JSON-Serde.
+This tool will take a curated JSON document and generate the Hive schema (CREATE TABLE statement) for use with the openx Hive-JSON-Serde.  I say "curated" because you should ensure that every possible key value pair is present and that all arrays have at least one entry (and arrays must have a single type of entry).
+
+If the cureated JSON example you provide has more than one entry in an array, *only the first one will be examined*, so you should ensure that it has all the fields.
 
 For more information on using the openx Hive-JSON-SerDe, see my [blog post entry](http://thornydev.blogspot.com/2013/07/querying-json-records-via-hive.html).
 
@@ -39,8 +41,7 @@ Both print the Hive schema to stdout.
 
 #### Example:
 
-For the JSON document:
-
+Suppose I have the JSON document:
 
     {
       "description": "my doc",
@@ -73,7 +74,37 @@ For the JSON document:
     }
 
 
-Here's the output:
+I recommend distilling it down to a doc with a single entry in each array and one that has all possible keys filled in - the values don't matter as long as they are present and a type can be determined.
+
+So my curated version of the JSON I've removed one of the entries from the "wobble" array and ensure that the remaining one has all the fields:
+
+    {
+      "description": "my doc",
+      "foo": {
+        "bar": "baz",
+        "quux": "revlos",
+        "level1" : {
+          "l2string": "l2val",
+          "l2struct": {
+            "level3": "l3val"
+          }
+        }
+      },
+      "wibble": "123",
+      "wobble": [
+        {
+          "entry": 1,
+          "EntryDetails": {
+            "details1": "lazybones",
+            "details2": 414
+          }
+        }
+      ]
+    }
+
+
+
+Now generate the schema:
 
     $ java -jar target/json-hive-schema-1.0-jar-with-dependencies.jar in.json TopQuark
     CREATE TABLE TopQuark (
