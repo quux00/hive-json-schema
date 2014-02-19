@@ -4,9 +4,9 @@ The best tool for using JSON docs with Hive is [rcongui's openx Hive-JSON-Serde]
 
 Hive schemas understand arrays, maps and structs.  You can map a JSON array to a Hive array and a JSON "object" to either a Hive map or struct.  I prefer to map JSON objects to structs.
 
-This tool will take a curated JSON document and generate the Hive schema (CREATE TABLE statement) for use with the openx Hive-JSON-Serde.  I say "curated" because you should ensure that every possible key value pair is present and that all arrays have at least one entry (and arrays must have a single type of entry).
+This tool will take a curated JSON document and generate the Hive schema (CREATE TABLE statement) for use with the openx Hive-JSON-Serde.  I say "curated" because you should ensure that every possible key is present (with some arbitrary value of the right data type) and that all arrays have at least one entry.
 
-If the cureated JSON example you provide has more than one entry in an array, *only the first one will be examined*, so you should ensure that it has all the fields.
+If the curated JSON example you provide has more than one entry in an array, *only the first one will be examined*, so you should ensure that it has all the fields.
 
 For more information on using the openx Hive-JSON-SerDe, see my [blog post entry](http://thornydev.blogspot.com/2013/07/querying-json-records-via-hive.html).
 
