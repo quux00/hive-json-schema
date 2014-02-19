@@ -76,7 +76,7 @@ Suppose I have the JSON document:
 
 I recommend distilling it down to a doc with a single entry in each array and one that has all possible keys filled in - the values don't matter as long as they are present and a type can be determined.
 
-So my curated version of the JSON I've removed one of the entries from the "wobble" array and ensure that the remaining one has all the fields:
+So for the curated version of the JSON I've removed one of the entries from the "wobble" array and ensured that the remaining one has all the fields:
 
     {
       "description": "my doc",
