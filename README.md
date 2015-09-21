@@ -23,10 +23,10 @@ Creates `json-hive-schema-1.0.jar` and `json-hive-schema-1.0-jar-with-dependenci
 
 #### with the non-executable jar
 
-    java -cp target/json-hive-schema-1.0.jar net.thorndev.JsonHiveSchema file.json
+    java -cp target/json-hive-schema-1.0.jar net.thornydev.JsonHiveSchema file.json
 
     # optionally specify the name of the table
-    java -cp target/json-hive-schema-1.0.jar net.thorndev.JsonHiveSchema file.json my_table_name
+    java -cp target/json-hive-schema-1.0.jar net.thornydev.JsonHiveSchema file.json my_table_name
 
 
 #### with the executable jar
