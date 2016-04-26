@@ -98,7 +98,9 @@ public class JsonHiveSchema  {
     while (keys.hasNext()) {
       String k = keys.next();
       sb.append("  ");
-      sb.append(k.toString());
+      sb.append("`");
+      sb.append(k.toString().replace("`", "``"));
+      sb.append("`");
       sb.append(' ');
       sb.append(valueToHiveSchema(jo.opt(k)));
       sb.append(',').append("\n");
@@ -116,7 +118,9 @@ public class JsonHiveSchema  {
     
     while (keys.hasNext()) {
       String k = keys.next();
-      sb.append(k.toString());
+      sb.append("`");
+      sb.append(k.toString().replace("`", "``"));
+      sb.append("`");
       sb.append(':');
       sb.append(valueToHiveSchema(o.opt(k)));
       sb.append(", ");
